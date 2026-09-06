@@ -9,6 +9,7 @@ import photo_aquarium from "@/imports/81bdba13-38ed-4eb5-b1bc-625ea1da1108.jpg";
 import photo_nightout from "@/imports/b65bda61-4da2-4c81-9c33-f09565e37ea9.jpg";
 import photo_food from "@/imports/1d05adb2-d464-4ec0-bdfd-497deffc9d1f.jpg";
 import photo_plaza from "@/imports/7b357d5d-7c32-48d1-b440-92c75b73db12.jpg";
+import song_colors from "@/imports/colors.mp3";
 
 // ─── Decorative SVGs ────────────────────────────────────────────────
 function Heart({ size = 16, className = "", style }: { size?: number; className?: string; style?: React.CSSProperties }) {
@@ -562,24 +563,83 @@ function RandomMemories() {
 // ─── Music Player ─────────────────────────────────────────────────────
 function MusicPlayer() {
   const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(23);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (playing) {
-      timerRef.current = setInterval(() => {
-        setProgress(p => p >= 100 ? (setPlaying(false), 0) : p + 0.3);
-      }, 200);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [playing]);
+    const audio = audioRef.current;
+    if (!audio) return;
 
-  const toTime = (pct: number) => {
-    const total = 243;
-    const secs = Math.floor((pct / 100) * total);
-    return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      if (audio.duration) {
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setPlaying(false);
+      setCurrentTime(0);
+      setProgress(0);
+      audio.currentTime = 0;
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
+
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, []);
+
+  const togglePlay = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      try {
+        await audio.play();
+        setPlaying(true);
+      } catch (error) {
+        console.error("Audio playback failed:", error);
+      }
+    }
+  };
+
+  const seek = (seconds: number) => {
+    const audio = audioRef.current;
+    if (!audio || !Number.isFinite(audio.duration)) return;
+
+    audio.currentTime = Math.max(
+      0,
+      Math.min(audio.currentTime + seconds, audio.duration)
+    );
+  };
+
+  const seekToPercentage = (percentage: number) => {
+    const audio = audioRef.current;
+    if (!audio || !Number.isFinite(audio.duration)) return;
+
+    audio.currentTime = percentage * audio.duration;
+  };
+
+  const toTime = (seconds: number) => {
+    if (!Number.isFinite(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${String(secs).padStart(2, "0")}`;
   };
 
   return (
@@ -589,6 +649,8 @@ function MusicPlayer() {
         <div className="relative">
           <WashiTape color="var(--pink)" rotation={-8} className="-top-3 left-16" />
           <div className="music-player p-6">
+            <audio ref={audioRef} src={song_colors} preload="metadata" />
+
             <div className="flex items-center gap-5 mb-6">
               <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-[var(--cream-dark)] shadow-md">
                 <img
@@ -598,30 +660,53 @@ function MusicPlayer() {
                 />
               </div>
               <div>
-                <p className="font-body font-semibold text-[var(--brown)] text-base">Enchanted</p>
-                <p className="text-[var(--muted)] text-sm">Taylor Swift</p>
+                <p className="font-body font-semibold text-[var(--brown)] text-base">Colors</p>
+                <p className="text-[var(--muted)] text-sm">Jake Llaguno</p>
                 <p className="font-script text-[var(--blush)] text-sm mt-1">our song ♡</p>
               </div>
             </div>
+
             <div className="mb-3">
-              <div className="w-full h-1 bg-[var(--cream-dark)] rounded-full overflow-hidden">
+              <div
+                className="w-full h-1 bg-[var(--cream-dark)] rounded-full overflow-hidden cursor-pointer"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const clickPosition = e.clientX - rect.left;
+                  const percentage = Math.max(0, Math.min(1, clickPosition / rect.width));
+                  seekToPercentage(percentage);
+                }}
+              >
                 <div className="progress-bar h-full" style={{ width: `${progress}%` }} />
               </div>
               <div className="flex justify-between mt-1.5">
-                <span className="text-[var(--muted)] text-xs">{toTime(progress)}</span>
-                <span className="text-[var(--muted)] text-xs">4:03</span>
+                <span className="text-[var(--muted)] text-xs">{toTime(currentTime)}</span>
+                <span className="text-[var(--muted)] text-xs">{toTime(duration)}</span>
               </div>
             </div>
+
             <div className="flex items-center justify-center gap-6 mt-4">
-              <button className="text-[var(--muted)] hover:text-[var(--brown)] transition-colors" onClick={() => setProgress(p => Math.max(0, p - 5))}>⏮</button>
+              <button
+                className="text-[var(--muted)] hover:text-[var(--brown)] transition-colors"
+                onClick={() => seek(-10)}
+                aria-label="Go back 10 seconds"
+              >
+                ⏮
+              </button>
               <button
                 className="w-12 h-12 rounded-full flex items-center justify-center shadow-md transition-all duration-200 hover:scale-105 active:scale-95"
                 style={{ background: "var(--brown)", color: "white", fontSize: "18px" }}
-                onClick={() => setPlaying(!playing)}
+                onClick={togglePlay}
+                aria-label={playing ? "Pause" : "Play"}
               >
                 {playing ? "⏸" : "▶"}
               </button>
-              <button className="text-[var(--muted)] hover:text-[var(--brown)] transition-colors" onClick={() => setProgress(p => Math.min(100, p + 5))}>⏭</button>
+              <button
+                className="text-[var(--muted)] hover:text-[var(--brown)] transition-colors"
+                onClick={() => seek(10)}
+                aria-label="Skip forward 10 seconds"
+              >
+                ⏭
+              </button>
             </div>
           </div>
           <div className="sticky-note absolute -bottom-10 -right-6 w-28 text-xs rotate-6">
