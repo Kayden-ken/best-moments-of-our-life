@@ -568,6 +568,89 @@ function MusicPlayer() {
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Lyric timing is approximate. You can fine-tune the "time" values
+  // after listening to the song and matching each line.
+  const lyrics = [
+    { time: 0, text: "I just want you here tonight", section: "Chorus" },
+    { time: 3.5, text: "You make me feel so alive" },
+    { time: 7, text: "Everything was black and white" },
+    { time: 10.5, text: "But you brought color to my life" },
+    { time: 14, text: "You are so sweet" },
+    { time: 17, text: "Make my heart skip a beat" },
+    { time: 20, text: "Everything was black and white" },
+    { time: 23.5, text: "But you brought color to my life" },
+    { time: 27, text: "La-la-la-la-la-la-la-la-la-la-la-la-la" },
+    { time: 31, text: "Color into my" },
+    { time: 34, text: "La-la-la-la-la-la-la-la-la-la-la" },
+    { time: 37.5, text: "(Oh, oh)" },
+    { time: 39.5, text: "Color into my life" },
+
+    { time: 43, text: "Clock's ticking, I'm looking for my way down", section: "Verse 1" },
+    { time: 47, text: "I'm searching, my head's been lost in the clouds" },
+    { time: 51, text: "The world was an empty town, oh" },
+    { time: 54.5, text: "But then you showed up" },
+    { time: 58, text: "Brought back the color to my life" },
+    { time: 61.5, text: "Saw my reflection inside your eyes" },
+    { time: 65, text: "Showed me perspective of something new" },
+    { time: 69, text: "Oh, I just need you" },
+    { time: 72.5, text: "I've been searching and searching" },
+    { time: 76, text: "I'm wondering what I need to do" },
+    { time: 79.5, text: "There's no need to plan this" },
+    { time: 83, text: "Our lives, the canvas" },
+
+    { time: 87, text: "I just want you here tonight", section: "Chorus" },
+    { time: 90.5, text: "You make me feel so alive" },
+    { time: 94, text: "Everything was black and white" },
+    { time: 97.5, text: "But you brought color to my life" },
+    { time: 101, text: "You are so sweet" },
+    { time: 104, text: "Make my heart skip a beat" },
+    { time: 107, text: "Everything was black and white" },
+    { time: 110.5, text: "But you brought color to my life" },
+
+    { time: 114, text: "I was losing my mind but you came in time, saved me", section: "Verse 2" },
+    { time: 118, text: "You put the pieces back when my soul was breaking" },
+    { time: 122, text: "But where do we go, where do we go from here?" },
+    { time: 126, text: "I don't know" },
+    { time: 129, text: "All I know is that I want you here with me" },
+    { time: 133, text: "Let's go paint our masterpiece" },
+    { time: 136.5, text: "Melodies and harmonies" },
+    { time: 140, text: "When you showed up, a symphony" },
+    { time: 143.5, text: "Was playing in my head" },
+    { time: 147, text: "I'm just drawn to your eyes" },
+    { time: 150.5, text: "I see you smiling at me, things begin to harmonize" },
+    { time: 155, text: "Doesn't have to be perfect" },
+    { time: 158.5, text: "It'll all still be worth it" },
+    { time: 162, text: "I was lost floating on by" },
+    { time: 165.5, text: "But you showed me where Earth is" },
+    { time: 169, text: "And now I'm on the surface with you" },
+    { time: 172, text: "With you" },
+    { time: 175, text: "Oh, (Oh-oh-ooh)" },
+
+    { time: 179, text: "Can't you stay with me tonight?", section: "Outro" },
+    { time: 183, text: "I'll help you feel so alive" },
+    { time: 186.5, text: "When everything feels black and white" },
+    { time: 190, text: "I'll bring color to your life" },
+    { time: 193.5, text: "You are so sweet" },
+    { time: 196.5, text: "Make my heart skip a beat" },
+    { time: 199, text: "Everything was black and white" },
+  ];
+
+  const getCurrentLyricIndex = () => {
+    let index = 0;
+
+    for (let i = 0; i < lyrics.length; i++) {
+      if (currentTime >= lyrics[i].time) {
+        index = i;
+      } else {
+        break;
+      }
+    }
+
+    return index;
+  };
+
+  const currentLyricIndex = getCurrentLyricIndex();
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -666,6 +749,26 @@ function MusicPlayer() {
               </div>
             </div>
 
+            {/* Synchronized lyrics */}
+            <div className="min-h-28 flex items-center justify-center text-center mb-5 px-2">
+              {playing && (
+                <div
+                  key={currentLyricIndex}
+                  className="animate-fade-up"
+                  style={{ animationDuration: "0.45s" }}
+                >
+                  {lyrics[currentLyricIndex].section && (
+                    <p className="text-[var(--muted)] text-xs uppercase tracking-[0.2em] mb-2">
+                      {lyrics[currentLyricIndex].section}
+                    </p>
+                  )}
+                  <p className="font-script text-[var(--brown)] text-2xl md:text-3xl leading-relaxed">
+                    “{lyrics[currentLyricIndex].text}” ♡
+                  </p>
+                </div>
+              )}
+            </div>
+
             <div className="mb-3">
               <div
                 className="w-full h-1 bg-[var(--cream-dark)] rounded-full overflow-hidden cursor-pointer"
@@ -718,19 +821,13 @@ function MusicPlayer() {
   );
 }
 
-// ─── Future / Bucket List ─────────────────────────────────────────────
-const bucketList = [
-  "Watch a sunset together",
-  "Travel somewhere new",
-  "Take more pictures together",
-  "Try a new restaurant",
-  "Have another late-night conversation",
-  "Make another unforgettable memory",
-  "Grow together",
-  "Keep choosing each other",
-];
-
 function Future() {
+  const bucketList = [
+    "Watch a sunrise together",
+    "Take a spontaneous road trip",
+    "Cook a new recipe together",
+    "Build a home full of memories",
+  ];
   const [checked, setChecked] = useState<Set<number>>(new Set([0, 2]));
   const toggle = (i: number) => {
     setChecked(prev => {
