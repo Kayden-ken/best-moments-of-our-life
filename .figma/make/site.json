@@ -1,0 +1,10 @@
+{
+  "description": "Create and customize digital designs effortlessly with intuitive tools that streamline your creative workflow and enhance productivity.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
