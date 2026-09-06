@@ -568,96 +568,93 @@ function MusicPlayer() {
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Lyric timing is approximate. You can fine-tune the "time" values
-  // after listening to the song and matching each line.
+  // Lyrics synced using the timestamps you provided from the LRC file.
   const lyrics = [
-    { time: 0, text: "I just want you here tonight", section: "Chorus" },
-    { time: 3.5, text: "You make me feel so alive" },
-    { time: 7, text: "Everything was black and white" },
-    { time: 10.5, text: "But you brought color to my life" },
-    { time: 14, text: "You are so sweet" },
-    { time: 17, text: "Make my heart skip a beat" },
-    { time: 20, text: "Everything was black and white" },
-    { time: 23.5, text: "But you brought color to my life" },
-    { time: 27, text: "La-la-la-la-la-la-la-la-la-la-la-la-la" },
-    { time: 31, text: "Color into my" },
-    { time: 34, text: "La-la-la-la-la-la-la-la-la-la-la" },
-    { time: 37.5, text: "(Oh, oh)" },
-    { time: 39.5, text: "Color into my life" },
+    { time: 0.79, text: "I just want you here tonight", section: "Chorus" },
+    { time: 4.02, text: "You make me feel so alive" },
+    { time: 7.38, text: "Everything was black and white" },
+    { time: 10.33, text: "But you brought color into my life" },
+    { time: 13.55, text: "You are so sweet" },
+    { time: 16.75, text: "Make my heart skip a beat" },
+    { time: 20.02, text: "Everything was black and white" },
+    { time: 23.05, text: "But you brought color into my life" },
+    { time: 25.65, text: "La la la la la la la la la la la la la" },
+    { time: 30.37, text: "Color into my" },
+    { time: 32.02, text: "La la la la la la la la la la la" },
+    { time: 35.22, text: "Oh" },
+    { time: 36.75, text: "Color into my life" },
 
-    { time: 43, text: "Clock's ticking, I'm looking for my way down", section: "Verse 1" },
-    { time: 47, text: "I'm searching, my head's been lost in the clouds" },
-    { time: 51, text: "The world was an empty town, oh" },
-    { time: 54.5, text: "But then you showed up" },
-    { time: 58, text: "Brought back the color to my life" },
-    { time: 61.5, text: "Saw my reflection inside your eyes" },
-    { time: 65, text: "Showed me perspective of something new" },
-    { time: 69, text: "Oh, I just need you" },
-    { time: 72.5, text: "I've been searching and searching" },
-    { time: 76, text: "I'm wondering what I need to do" },
-    { time: 79.5, text: "There's no need to plan this" },
-    { time: 83, text: "Our lives, the canvas" },
+    { time: 38.81, text: "Clocks ticking I'm looking for my way down", section: "Verse 1" },
+    { time: 41.98, text: "I'm searching my head's been lost in the clouds" },
+    { time: 45.50, text: "The world was an empty town" },
+    { time: 50.20, text: "But then you showed up" },
+    { time: 51.95, text: "Brought back the color into my life" },
+    { time: 55.18, text: "Saw my reflection inside your eyes" },
+    { time: 58.36, text: "Showed me perspective of something new" },
+    { time: 62.03, text: "Oh I just need you" },
+    { time: 66.80, text: "I've been searching and searching" },
+    { time: 68.66, text: "I'm wondering what I need to do" },
+    { time: 73.49, text: "There's no need to plan this" },
+    { time: 75.10, text: "Our lives, the canvas" },
 
-    { time: 87, text: "I just want you here tonight", section: "Chorus" },
-    { time: 90.5, text: "You make me feel so alive" },
-    { time: 94, text: "Everything was black and white" },
-    { time: 97.5, text: "But you brought color to my life" },
-    { time: 101, text: "You are so sweet" },
-    { time: 104, text: "Make my heart skip a beat" },
-    { time: 107, text: "Everything was black and white" },
-    { time: 110.5, text: "But you brought color to my life" },
+    { time: 77.55, text: "I just want you here tonight", section: "Chorus" },
+    { time: 80.75, text: "You make me feel so alive" },
+    { time: 83.98, text: "Everything was black and white" },
+    { time: 87.08, text: "But you brought color into my life" },
+    { time: 90.37, text: "You are so sweet" },
+    { time: 93.57, text: "Make my heart skip a beat" },
+    { time: 96.73, text: "Everything was black and white" },
+    { time: 99.86, text: "But you brought color into my life" },
 
-    { time: 114, text: "I was losing my mind but you came in time, saved me", section: "Verse 2" },
-    { time: 118, text: "You put the pieces back when my soul was breaking" },
-    { time: 122, text: "But where do we go, where do we go from here?" },
-    { time: 126, text: "I don't know" },
-    { time: 129, text: "All I know is that I want you here with me" },
-    { time: 133, text: "Let's go paint our masterpiece" },
-    { time: 136.5, text: "Melodies and harmonies" },
-    { time: 140, text: "When you showed up, a symphony" },
-    { time: 143.5, text: "Was playing in my head" },
-    { time: 147, text: "I'm just drawn to your eyes" },
-    { time: 150.5, text: "I see you smiling at me, things begin to harmonize" },
-    { time: 155, text: "Doesn't have to be perfect" },
-    { time: 158.5, text: "It'll all still be worth it" },
-    { time: 162, text: "I was lost floating on by" },
-    { time: 165.5, text: "But you showed me where Earth is" },
-    { time: 169, text: "And now I'm on the surface with you" },
-    { time: 172, text: "With you" },
-    { time: 175, text: "Oh, (Oh-oh-ooh)" },
+    // Instrumental gap from 01:39.86 to 01:54.75 — no lyric displayed.
+    { time: 114.75, text: "I was losing my mind, but you came in time, saved me", section: "Verse 2" },
+    { time: 118.35, text: "You put the pieces back when my soul was breaking" },
+    { time: 121.84, text: "But where do we go, where do we go from here?" },
+    { time: 125.05, text: "I don't know" },
+    { time: 127.24, text: "All I know is that I want you here with me" },
+    { time: 129.61, text: "Let's go paint our masterpiece" },
+    { time: 131.24, text: "Melodies and harmonies" },
+    { time: 132.61, text: "When you showed up a Symphony" },
+    { time: 134.29, text: "Was playing in my head" },
+    { time: 135.57, text: "I'm just drawn to your eyes" },
+    { time: 137.47, text: "I see you smiling at me, things begin to harmonize" },
+    { time: 140.41, text: "Doesn't have to be perfect" },
+    { time: 142.32, text: "It'll all still be worth it" },
+    { time: 144.02, text: "I was lost floating on by" },
+    { time: 146.09, text: "But you showed me where Earth is" },
+    { time: 149.45, text: "And now I'm on the surface" },
+    { time: 152.00, text: "With you" },
+    { time: 155.98, text: "With you" },
+    { time: 159.14, text: "Oh oh oh" },
+    { time: 163.13, text: "Ohhh ohhh ohhh" },
 
-    { time: 179, text: "Can't you stay with me tonight?", section: "Outro" },
-    { time: 183, text: "I'll help you feel so alive" },
-    { time: 186.5, text: "When everything feels black and white" },
-    { time: 190, text: "I'll bring color to your life" },
-    { time: 193.5, text: "You are so sweet" },
-    { time: 196.5, text: "Make my heart skip a beat" },
-    { time: 199, text: "Everything was black and white" },
+    { time: 170.16, text: "Can't you stay with me tonight?", section: "Outro" },
+    { time: 173.54, text: "I'll help you feel so alive" },
+    { time: 177.00, text: "When everything feels black and white" },
+    { time: 179.87, text: "I'll bring color to your life" },
+    { time: 183.20, text: "You are so sweet" },
+    { time: 186.57, text: "Make my heart skip a beat" },
+    { time: 189.74, text: "Everything was black and white" },
+    { time: 192.74, text: "But you brought color into my life" },
   ];
 
   const getCurrentLyricIndex = () => {
-    let index = 0;
-
-    for (let i = 0; i < lyrics.length; i++) {
-      if (currentTime >= lyrics[i].time) {
-        index = i;
-      } else {
-        break;
-      }
+    for (let i = lyrics.length - 1; i >= 0; i--) {
+      if (currentTime >= lyrics[i].time) return i;
     }
-
-    return index;
+    return -1;
   };
 
   const currentLyricIndex = getCurrentLyricIndex();
+
+  // Hide lyrics during the instrumental gap.
+  const inInstrumentalGap = currentTime >= 99.86 && currentTime < 114.75;
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-    };
+    const handleLoadedMetadata = () => setDuration(audio.duration);
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -749,9 +746,8 @@ function MusicPlayer() {
               </div>
             </div>
 
-            {/* Synchronized lyrics */}
             <div className="min-h-28 flex items-center justify-center text-center mb-5 px-2">
-              {playing && (
+              {playing && !inInstrumentalGap && currentLyricIndex >= 0 && (
                 <div
                   key={currentLyricIndex}
                   className="animate-fade-up"
@@ -823,10 +819,10 @@ function MusicPlayer() {
 
 function Future() {
   const bucketList = [
-    "Watch a sunrise together",
-    "Take a spontaneous road trip",
-    "Cook a new recipe together",
-    "Build a home full of memories",
+    "Watch the sunrise together",
+    "Take a trip somewhere new",
+    "Make more little memories",
+    "Grow old together ♡",
   ];
   const [checked, setChecked] = useState<Set<number>>(new Set([0, 2]));
   const toggle = (i: number) => {
