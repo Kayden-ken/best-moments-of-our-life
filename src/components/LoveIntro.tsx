@@ -12,11 +12,13 @@ export default function LoveIntro({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
 
+
   const startIntro = () => {
 
     setPlaying(true);
 
     const audio = audioRef.current;
+
 
     if (!audio) {
       console.error("Audio element not found");
@@ -33,6 +35,7 @@ export default function LoveIntro({
       const time = audio.currentTime;
 
       console.log("VOICE TIME:", time);
+
 
 
       /*
@@ -80,6 +83,7 @@ export default function LoveIntro({
 
 
 
+
     audio.ontimeupdate = syncVoice;
 
 
@@ -96,11 +100,24 @@ export default function LoveIntro({
 
 
 
+    audio.onerror = () => {
+
+      console.error(
+        "Audio failed loading:",
+        audio.error
+      );
+
+    };
+
+
+
     audio.onended = () => {
 
       console.log("VOICE ENDED");
 
+
       setPhase(3);
+
 
 
       setTimeout(() => {
@@ -113,12 +130,15 @@ export default function LoveIntro({
 
 
 
+
     audio.play()
+
       .then(() => {
 
         console.log("VOICE STARTED");
 
       })
+
       .catch((error) => {
 
         console.error(
@@ -128,7 +148,11 @@ export default function LoveIntro({
 
       });
 
+
   };
+
+
+
 
 
 
@@ -154,18 +178,29 @@ export default function LoveIntro({
     >
 
 
+
+
       <audio
         ref={audioRef}
-        src="/intro-voice.m4a"
         preload="auto"
         playsInline
-      />
+      >
+
+        <source
+          src="/intro-voice.mp3"
+          type="audio/mpeg"
+        />
+
+      </audio>
+
+
 
 
 
 
 
       {/* PLAY SCREEN */}
+
 
       {!playing && (
 
@@ -176,6 +211,7 @@ export default function LoveIntro({
           "
         >
 
+
           <p
             className="
               text-white
@@ -184,13 +220,18 @@ export default function LoveIntro({
               mb-10
             "
           >
+
             It's just us being us ♡
+
           </p>
+
+
 
 
 
           <button
             onClick={startIntro}
+
             className="
               w-20
               h-20
@@ -213,8 +254,12 @@ export default function LoveIntro({
               transition-all
             "
           >
+
             ▶
+
           </button>
+
+
 
 
 
@@ -224,8 +269,11 @@ export default function LoveIntro({
               text-white/70
             "
           >
+
             Press play to witness something magical
+
           </p>
+
 
 
         </div>
@@ -238,7 +286,11 @@ export default function LoveIntro({
 
 
 
+
+
       {/* STORY TEXT */}
+
+
 
       {playing && phase < 3 && (
 
@@ -248,6 +300,8 @@ export default function LoveIntro({
             px-6
           "
         >
+
+
 
 
 
@@ -265,10 +319,13 @@ export default function LoveIntro({
                 animate-fade-up
               "
             >
+
               When Everything Felt Black and White,
+
             </p>
 
           )}
+
 
 
 
@@ -289,10 +346,13 @@ export default function LoveIntro({
                 animate-fade-up
               "
             >
+
               You Came
+
             </p>
 
           )}
+
 
 
 
@@ -314,10 +374,15 @@ export default function LoveIntro({
                 animate-fade-up
               "
             >
+
               And Showed Me The Colors I Never Knew Existed
+
             </p>
 
           )}
+
+
+
 
 
 
@@ -331,7 +396,11 @@ export default function LoveIntro({
 
 
 
+
+
       {/* FINAL TRANSITION */}
+
+
 
       {phase >= 3 && (
 
@@ -346,6 +415,7 @@ export default function LoveIntro({
         >
 
 
+
           <h1
             className="
               font-script
@@ -355,8 +425,11 @@ export default function LoveIntro({
               text-[var(--brown)]
             "
           >
+
             Us Being Us ♡
+
           </h1>
+
 
 
 
@@ -370,8 +443,11 @@ export default function LoveIntro({
               italic
             "
           >
+
             You're witnessing the love story of us being us.
+
           </p>
+
 
 
 
@@ -385,8 +461,12 @@ export default function LoveIntro({
               text-sm
             "
           >
+
             A story made from little moments and endless memories.
+
           </p>
+
+
 
 
 
