@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 
-import introVoice from "@/imports/intro-voice.m4a";
+import introVoice from "../imports/intro-voice.m4a";
 
 export default function LoveIntro({
   onStart,
 }: {
   onStart: () => void;
 }) {
+
   const [playing, setPlaying] = useState(false);
   const [phase, setPhase] = useState(0);
 
@@ -14,6 +15,7 @@ export default function LoveIntro({
 
 
   const startIntro = () => {
+
     setPlaying(true);
 
     const audio = audioRef.current;
@@ -22,7 +24,11 @@ export default function LoveIntro({
 
 
     audio.currentTime = 0;
-    audio.play();
+
+
+    audio.play().catch((error) => {
+      console.error("Audio failed:", error);
+    });
 
 
 
@@ -52,20 +58,20 @@ export default function LoveIntro({
 
         setPhase(0);
 
-      } 
-      
+      }
+
       else if (time < 3.8) {
 
         setPhase(1);
 
-      } 
-      
+      }
+
       else if (time < 7.7) {
 
         setPhase(2);
 
-      } 
-      
+      }
+
       else {
 
         setPhase(3);
@@ -119,7 +125,9 @@ export default function LoveIntro({
       <audio
         ref={audioRef}
         src={introVoice}
+        preload="auto"
       />
+
 
 
 
@@ -195,6 +203,7 @@ export default function LoveIntro({
 
 
 
+
       {/* STORY TEXT */}
 
       {playing && phase < 3 && (
@@ -230,6 +239,7 @@ export default function LoveIntro({
 
 
 
+
           {phase === 1 && (
 
             <p
@@ -248,6 +258,7 @@ export default function LoveIntro({
             </p>
 
           )}
+
 
 
 
@@ -312,6 +323,7 @@ export default function LoveIntro({
 
 
 
+
           <p
             className="
               mt-5
@@ -323,6 +335,7 @@ export default function LoveIntro({
           >
             You're witnessing the love story of us being us.
           </p>
+
 
 
 
@@ -346,7 +359,10 @@ export default function LoveIntro({
 
 
 
+
+
     </section>
 
   );
+
 }
