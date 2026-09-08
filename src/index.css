@@ -137,3 +137,32 @@ body {
   height: 4px;
   transition: width 0.3s ease;
 }
+@keyframes heart-firework {
+
+  0% {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      scale(0);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(
+        calc(-50% + var(--x)),
+        calc(-50% + var(--y))
+      )
+      scale(1.4)
+      rotate(360deg);
+  }
+
+}
+
+.animate-heart-firework {
+  animation: heart-firework 1.8s ease-out forwards;
+}
