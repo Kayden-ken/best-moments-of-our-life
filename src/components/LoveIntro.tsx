@@ -123,10 +123,10 @@ export default function LoveIntro({
 
 
       <audio
-        ref={audioRef}
-        src={introVoice}
-        preload="auto"
-      />
+  ref={audioRef}
+  src="/intro-voice.m4a"
+  preload="auto"
+/>
 
 
 
