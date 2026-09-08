@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 
-import introVoice from "../imports/intro-voice.m4a";
-
 export default function LoveIntro({
   onStart,
 }: {
@@ -20,21 +18,21 @@ export default function LoveIntro({
 
     const audio = audioRef.current;
 
-    if (!audio) return;
+    if (!audio) {
+      console.error("Audio element not found");
+      return;
+    }
 
 
     audio.currentTime = 0;
 
 
-    audio.play().catch((error) => {
-      console.error("Audio failed:", error);
-    });
 
-
-
-    audio.ontimeupdate = () => {
+    const syncVoice = () => {
 
       const time = audio.currentTime;
+
+      console.log("VOICE TIME:", time);
 
 
       /*
@@ -82,12 +80,29 @@ export default function LoveIntro({
 
 
 
+    audio.ontimeupdate = syncVoice;
+
+
+
+    audio.onloadedmetadata = () => {
+
+      console.log(
+        "Audio loaded:",
+        audio.duration,
+        "seconds"
+      );
+
+    };
+
+
+
     audio.onended = () => {
+
+      console.log("VOICE ENDED");
 
       setPhase(3);
 
 
-      // Movie-like pause before entering the website
       setTimeout(() => {
 
         onStart();
@@ -96,7 +111,25 @@ export default function LoveIntro({
 
     };
 
+
+
+    audio.play()
+      .then(() => {
+
+        console.log("VOICE STARTED");
+
+      })
+      .catch((error) => {
+
+        console.error(
+          "Audio failed:",
+          error
+        );
+
+      });
+
   };
+
 
 
 
@@ -121,12 +154,12 @@ export default function LoveIntro({
     >
 
 
-
       <audio
-  ref={audioRef}
-  src="/intro-voice.m4a"
-  preload="auto"
-/>
+        ref={audioRef}
+        src="/intro-voice.m4a"
+        preload="auto"
+        playsInline
+      />
 
 
 
@@ -204,6 +237,7 @@ export default function LoveIntro({
 
 
 
+
       {/* STORY TEXT */}
 
       {playing && phase < 3 && (
@@ -240,6 +274,7 @@ export default function LoveIntro({
 
 
 
+
           {phase === 1 && (
 
             <p
@@ -258,6 +293,8 @@ export default function LoveIntro({
             </p>
 
           )}
+
+
 
 
 
@@ -356,8 +393,6 @@ export default function LoveIntro({
         </div>
 
       )}
-
-
 
 
 
